@@ -165,10 +165,6 @@
       <artifactId>commons-dbcp</artifactId>
     </dependency>
     <dependency>
-      <groupId>rhino</groupId>
-      <artifactId>js</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.gatein.wci</groupId>
       <artifactId>wci-tomcat6</artifactId>
     </dependency>
