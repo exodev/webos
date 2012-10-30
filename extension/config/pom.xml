@@ -30,5 +30,4 @@
   <packaging>jar</packaging>
   <name>GateIn WebOS Extension Configuration</name>
   <description>GateIn WebOS Extension Configuration</description>
-  <url>http://www.exoplatform.org</url>
 </project>

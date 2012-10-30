@@ -906,7 +906,7 @@
                      <rules>
                         <requireProperty>
                            <property>exo.projects.directory.dependencies</property>
-                           <message>"You must abc"</message>
+                           <message>"You must define the property exo.projects.directory.dependencies to give the path to the directory where you store your applications servers"</message>
                         </requireProperty>
                         <requireProperty>
                            <property>exo.projects.app.tomcat.version</property>
@@ -916,7 +916,7 @@
                            <files>
                               <file>${exo.projects.directory.dependencies}/${exo.projects.app.tomcat.version}</file>
                            </files>
-                           <message>"No have tomcat"</message>
+                           <message>"The following Tomcat directory doesn't exist : ${exo.projects.directory.dependencies}/${exo.projects.app.tomcat.version}"</message>
                         </requireFilesExist>
                      </rules>
                      <fail>true</fail>
@@ -928,7 +928,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.6</version>
             <executions>
                <execution>
                   <id>prepare-package</id>

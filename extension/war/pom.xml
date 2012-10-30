@@ -30,7 +30,6 @@
   <packaging>war</packaging>
   <name>GateIn WebOS Extension War</name>
   <description>GateIn WebOS Extension War</description>
-  <url>http://www.exoplatform.org</url>
   <build>
     <finalName>webos-ext</finalName>
   </build>
