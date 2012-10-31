@@ -81,7 +81,7 @@
         </executions>
         <configuration>
           <bookId>SocialReferenceGuide</bookId>
-          <sourceDirectory>${wikbook.sourceDirectory}/en/en-US</sourceDirectory>
+          <sourceDirectory>${wikbook.sourceDirectory}</sourceDirectory>
           <sourceFileName>book.wiki</sourceFileName>
           <destinationDirectory>${docbook.sourceDirectory}</destinationDirectory>
           <destinationFileName>${project.artifactId}.xml</destinationFileName>
@@ -248,7 +248,7 @@
           <!-- Copy any docbook XML -->
           <preProcess>
             <copy todir="${docbook.sourceDirectory}">
-              <fileset dir="${wikbook.sourceDirectory}/en/en-US">
+              <fileset dir="${wikbook.sourceDirectory}/">
                 <include name="**/*.xml" />
               </fileset>
             </copy>
