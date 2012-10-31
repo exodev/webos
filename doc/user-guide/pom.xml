@@ -54,7 +54,7 @@
               <outputDirectory>${wikbook.sourceDirectory}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/main/resources/wikbook</directory>
+                  <directory>src/main/resources</directory>
                   <filtering>true</filtering>
                 </resource>
               </resources>
@@ -175,7 +175,7 @@
               <!-- Copy the image -->
               <postProcess>
                 <copy todir="${docbook.targetDirectory}/html/images">
-                  <fileset dir="${pom.basedir}/src/main/resources/wikbook/images">
+                  <fileset dir="${pom.basedir}/src/main/resources/images">
                     <include name="**" />
                   </fileset>
                 </copy>
@@ -209,7 +209,7 @@
               <!-- Copy the image -->
               <postProcess>
                 <copy todir="${docbook.targetDirectory}/xhtml/images">
-                  <fileset dir="${pom.basedir}/src/main/resources/wikbook/images">
+                  <fileset dir="${pom.basedir}/src/main/resources/images">
                     <include name="**" />
                   </fileset>
                 </copy>
@@ -301,23 +301,10 @@
         </executions>
       </plugin>
 
-      <!-- Attach the doc to the pom in maven repo -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/main/resources/wikbook</source>
-              </sources>
-            </configuration>
-          </execution>
           <execution>
             <id>attach-artifacts</id>
             <phase>package</phase>
