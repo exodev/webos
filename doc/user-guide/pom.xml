@@ -35,7 +35,6 @@
     <wikbook.validationMode>strict</wikbook.validationMode> <!-- lax/strick -->
     <docbook.sourceDirectory>${project.build.directory}/wikbook/src</docbook.sourceDirectory>
     <docbook.targetDirectory>${project.build.directory}/wikbook/output</docbook.targetDirectory>
-
   </properties>
 
   <build>
@@ -168,20 +167,20 @@
             <configuration>
 
               <!-- Output -->
-              <targetDirectory>${project.build.directory}/wikbook/output/html</targetDirectory>
+              <targetDirectory>${docbook.targetDirectory}/html</targetDirectory>
 
               <!-- Stylesheets -->
               <htmlCustomization>${docbook.sourceDirectory}/resources/xsl/bootstrap/html.xsl</htmlCustomization>
 
               <!-- Copy the image -->
               <postProcess>
-                <copy todir="${project.build.directory}/wikbook/output/html/images">
+                <copy todir="${docbook.targetDirectory}/html/images">
                   <fileset dir="${pom.basedir}/src/main/resources/wikbook/images">
                     <include name="**" />
                   </fileset>
                 </copy>
-                <copy todir="${project.build.directory}/wikbook/output/html">
-                  <fileset dir="${project.build.directory}/wikbook/src/resources">
+                <copy todir="${docbook.targetDirectory}/html">
+                  <fileset dir="${docbook.sourceDirectory}/resources">
                     <include name="**/*.css" />
                     <include name="**/*.js" />
                     <include name="**/*.png" />
@@ -201,7 +200,7 @@
             <configuration>
 
               <!-- Output -->
-              <targetDirectory>${project.build.directory}/wikbook/output/xhtml</targetDirectory>
+              <targetDirectory>${docbook.targetDirectory}/xhtml</targetDirectory>
               <targetFileExtension>html</targetFileExtension>
 
               <!-- Stylesheets -->
@@ -209,13 +208,13 @@
 
               <!-- Copy the image -->
               <postProcess>
-                <copy todir="${project.build.directory}/wikbook/output/xhtml/images">
+                <copy todir="${docbook.targetDirectory}/xhtml/images">
                   <fileset dir="${pom.basedir}/src/main/resources/wikbook/images">
                     <include name="**" />
                   </fileset>
                 </copy>
-                <copy todir="${project.build.directory}/wikbook/output/xhtml">
-                  <fileset dir="${project.build.directory}/wikbook/src/resources">
+                <copy todir="${docbook.targetDirectory}/xhtml">
+                  <fileset dir="${docbook.sourceDirectory}/resources">
                     <include name="**/*.css" />
                     <include name="**/*.png" />
                     <include name="**/*.gif" />
@@ -277,9 +276,9 @@
           </execution>
         </executions>
         <configuration>
-          <sourceDirectory>${project.build.directory}/wikbook/output/xhtml</sourceDirectory>
+          <sourceDirectory>${docbook.targetDirectory}/xhtml</sourceDirectory>
           <sourceFileName>webos-doc-user-guide.html</sourceFileName>
-          <destinationDirectory>${project.build.directory}/wikbook/output/pdf</destinationDirectory>
+          <destinationDirectory>${docbook.targetDirectory}/pdf</destinationDirectory>
           <destinationFileName>webos-doc-user-guide.pdf</destinationFileName>
         </configuration>
       </plugin>
