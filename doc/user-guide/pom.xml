@@ -315,7 +315,7 @@
             </goals>
             <configuration>
               <sources>
-                <source>src/main/resources</source>
+                <source>src/main/resources/wikbook</source>
               </sources>
             </configuration>
           </execution>
