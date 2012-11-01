@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-    
+
   <parent>
     <groupId>org.exoplatform.webos</groupId>
     <artifactId>webos</artifactId>
@@ -22,68 +22,131 @@
       <version>${version.wikbook.plugin}</version>
     </dependency>
     <dependency>
-		 <groupId>org.exoplatform.doc</groupId>
-		 <artifactId>doc-style</artifactId>
-		 <version>${org.exoplatform.doc.doc-style.version}</version>
-		 <type>jar</type>
-	   </dependency>
+      <groupId>org.exoplatform.doc</groupId>
+      <artifactId>doc-style</artifactId>
+      <version>${org.exoplatform.doc.doc-style.version}</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 
   <properties>
-    <wikbook.sourceDirectory>${project.build.directory}/wikbook/tmp</wikbook.sourceDirectory>
-    <wikbook.syntaxId>confluence/1.0</wikbook.syntaxId><!-- xwiki/2.0 -->
+    <wikbook.syntaxId>confluence/1.0</wikbook.syntaxId><!-- confluence/1.0 -->
     <wikbook.validationMode>strict</wikbook.validationMode> <!-- lax/strick -->
-    <docbook.sourceDirectory>${project.build.directory}/wikbook/src</docbook.sourceDirectory>
-    <docbook.targetDirectory>${project.build.directory}/wikbook/output</docbook.targetDirectory>
+    <wikbook.source>${project.basedir}/src/main/resources/wikbook-src</wikbook.source>
+    <docbook.source>${project.build.directory}/docbook-src</docbook.source>
   </properties>
-
   <build>
     <plugins>
-      <!-- Copy resources filtering with maven properties -->
+
+      <!--
+       1/
+        - download the common resources
+        - unpack them in /target/docbook-src
+       -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>a-unpack</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.wikbook</groupId>
+                  <artifactId>wikbook.docbkxstyle</artifactId>
+                  <version>${version.wikbook.plugin}</version>
+                  <outputDirectory>${docbook.source}</outputDirectory>
+                  <includes>**</includes>
+                  <excludes>META-INF/**</excludes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.exoplatform.doc</groupId>
+                  <artifactId>doc-style</artifactId>
+                  <version>${org.exoplatform.doc.doc-style.version}</version>
+                  <outputDirectory>${docbook.source}</outputDirectory>
+                  <includes>**</includes>
+                  <excludes>META-INF/**</excludes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!--
+        2) copy the wikbook and docbook sources to target/
+       -->
+      <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>prepare</id>
-            <phase>compile</phase>
+            <id>b-copy-resources</id>
+            <phase>generate-sources</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${wikbook.sourceDirectory}</outputDirectory>
+              <outputDirectory>${project.build.directory}/</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/main/resources</directory>
-                  <filtering>true</filtering>
+                  <excludes>
+                    <exclude>images/**</exclude>
+                    <exclude>background/**</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <!--
+           2b) copy the images and background icons to docbook sources directory
+           -->
+          <execution>
+            <id>c-copy-images</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${docbook.source}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <excludes>
+                    <exclude>docbook-src/**</exclude>
+                    <exclude>wikbook-src/**</exclude>
+                  </excludes>
                 </resource>
               </resources>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
       <!--
-        The wikbook maven plugin generates the docbook document from the
-        wiki source
-      -->
+        3)  The wikbook maven plugin generates the docbook document from the wiki source
+       -->
       <plugin>
         <groupId>org.wikbook</groupId>
         <artifactId>wikbook.maven</artifactId>
         <executions>
           <execution>
-            <phase>prepare-package</phase>
+            <id>d-generate-docbook</id>
+            <phase>generate-sources</phase>
             <goals>
               <goal>transform</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <bookId>SocialReferenceGuide</bookId>
-          <sourceDirectory>${wikbook.sourceDirectory}</sourceDirectory>
+          <bookId>WebOSUsersGuide</bookId>
+          <sourceDirectory>${wikbook.source}</sourceDirectory>
           <sourceFileName>book.wiki</sourceFileName>
-          <destinationDirectory>${docbook.sourceDirectory}</destinationDirectory>
-          <destinationFileName>${project.artifactId}.xml</destinationFileName>
+          <destinationDirectory>${docbook.source}</destinationDirectory>
+          <destinationFileName>index.xml</destinationFileName>
+          <emitDoctype>true</emitDoctype>
           <beforeBookBodyXML><![CDATA[
                  <xi:include href="bookinfo.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
                  <!--xi:include href="acknowledgements.xml" xmlns:xi="http://www.w3.org/2001/XInclude" /-->
@@ -92,221 +155,130 @@
           <syntaxId>${wikbook.syntaxId}</syntaxId>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-role</id>
-            <phase>prepare-package</phase>
-            <configuration>
-              <target>
-                <replace file="${docbook.sourceDirectory}/${project.artifactId}.xml">
-                  <replacetoken><![CDATA[RoleNotInToc"]]></replacetoken>
-         	  <replacevalue><![CDATA[" role="NotInToc"]]></replacevalue>
-	        </replace>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Unpacks the docbook style resources for the docbkx plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>a</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.wikbook</groupId>
-                  <artifactId>wikbook.docbkxstyle</artifactId>
-                  <version>${version.wikbook.plugin}</version>
-                  <includes>**</includes>
-                  <excludes>META-INF/**</excludes>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.exoplatform.doc</groupId>
-                  <artifactId>doc-style</artifactId>
-                  <version>${doc-style.version}</version>
-                  <includes>**</includes>
-                  <excludes>META-INF/**</excludes>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${docbook.sourceDirectory}/resources</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Dockbx plugin that generates content -->
-      <plugin>
-        <groupId>com.agilejava.docbkx</groupId>
-        <artifactId>docbkx-maven-plugin</artifactId>
-        <!--
-          not last generation due to incompatibilities with last docbook
-          format
+      <!--
+       4) process all the xml files
+          to generate the html and the pdf
         -->
-        <executions>
-          <execution>
-            <id>generate-html</id>
-            <goals>
-              <goal>generate-html</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-
-              <!-- Output -->
-              <targetDirectory>${docbook.targetDirectory}/html</targetDirectory>
-
-              <!-- Stylesheets -->
-              <htmlCustomization>${docbook.sourceDirectory}/resources/xsl/bootstrap/html.xsl</htmlCustomization>
-
-              <!-- Copy the image -->
-              <postProcess>
-                <copy todir="${docbook.targetDirectory}/html/images">
-                  <fileset dir="${pom.basedir}/src/main/resources/images">
-                    <include name="**" />
-                  </fileset>
-                </copy>
-                <copy todir="${docbook.targetDirectory}/html">
-                  <fileset dir="${docbook.sourceDirectory}/resources">
-                    <include name="**/*.css" />
-                    <include name="**/*.js" />
-                    <include name="**/*.png" />
-                    <include name="**/*.gif" />
-                    <include name="**/*.jpg" />
-                  </fileset>
-                </copy>
-              </postProcess>
-            </configuration>
-          </execution>
-          <execution>
-            <id>generate-xhtml</id>
-            <goals>
-              <goal>generate-xhtml</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-
-              <!-- Output -->
-              <targetDirectory>${docbook.targetDirectory}/xhtml</targetDirectory>
-              <targetFileExtension>html</targetFileExtension>
-
-              <!-- Stylesheets -->
-              <xhtmlCustomization>${docbook.sourceDirectory}/resources/xsl/simple/pdf.xsl</xhtmlCustomization>
-
-              <!-- Copy the image -->
-              <postProcess>
-                <copy todir="${docbook.targetDirectory}/xhtml/images">
-                  <fileset dir="${pom.basedir}/src/main/resources/images">
-                    <include name="**" />
-                  </fileset>
-                </copy>
-                <copy todir="${docbook.targetDirectory}/xhtml">
-                  <fileset dir="${docbook.sourceDirectory}/resources">
-                    <include name="**/*.css" />
-                    <include name="**/*.png" />
-                    <include name="**/*.gif" />
-                    <include name="**/*.jpg" />
-                  </fileset>
-                </copy>
-              </postProcess>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <sourceDirectory>${docbook.sourceDirectory}</sourceDirectory>
-          <targetDirectory>${docbook.targetDirectory}</targetDirectory>
-          <includes>${project.artifactId}.xml</includes>
-
-          <!-- Highlight source code -->
-          <highlightSource>1</highlightSource>
-
-          <!-- We need to support xinclude -->
-          <xincludeSupported>true</xincludeSupported>
-
-          <!--
-            | See
-            http://www.sagehill.net/docbookxsl/AnnotateListing.html |
-            Callouts on imported text
-          -->
-          <useExtensions>1</useExtensions>
-          <calloutsExtension>1</calloutsExtension>
-
-          <!-- Copy any docbook XML -->
-          <preProcess>
-            <copy todir="${docbook.sourceDirectory}">
-              <fileset dir="${wikbook.sourceDirectory}/">
-                <include name="**/*.xml" />
-              </fileset>
-            </copy>
-          </preProcess>
-
-        </configuration>
+      <plugin>
+        <groupId>org.jboss.maven.plugins</groupId>
+        <artifactId>maven-jdocbook-plugin</artifactId>
+        <version>2.1.1</version>
         <dependencies>
           <dependency>
-            <groupId>org.docbook</groupId>
-            <artifactId>docbook-xml</artifactId>
-            <version>4.4</version>
-            <scope>runtime</scope>
+            <groupId>org.exoplatform.doc</groupId>
+            <artifactId>exo-docbook-xslt</artifactId>
+            <version>1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.exoplatform.doc</groupId>
+            <artifactId>exo-jdocbook-style</artifactId>
+            <version>1</version>
+            <type>jdocbook-style</type>
           </dependency>
         </dependencies>
-      </plugin>
-
-      <plugin>
-        <groupId>org.wikbook</groupId>
-        <artifactId>wikbook.html2pdf</artifactId>
-	<executions>
+        <executions>
           <execution>
-            <phase>package</phase>
+            <id>e-jdocbook-resources</id>
+            <phase>process-resources</phase>
             <goals>
-              <goal>transform</goal>
+              <goal>resources</goal>
             </goals>
+          </execution>
+          <execution>
+            <id>f-generate-docs</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>compile</phase>
           </execution>
         </executions>
         <configuration>
-          <sourceDirectory>${docbook.targetDirectory}/xhtml</sourceDirectory>
-          <sourceFileName>webos-doc-user-guide.html</sourceFileName>
-          <destinationDirectory>${docbook.targetDirectory}/pdf</destinationDirectory>
-          <destinationFileName>webos-doc-user-guide.pdf</destinationFileName>
+          <sourceDirectory>${docbook.source}</sourceDirectory>
+          <sourceDocumentName>index.xml</sourceDocumentName>
+          <imageResource>
+            <directory>${docbook.source}</directory>
+            <includes>
+              <include>images/**</include>
+              <include>background/**</include>
+            </includes>
+          </imageResource>
+          <cssResource>
+            <directory>${docbook.source}</directory>
+            <includes>
+              <include>css/**</include>
+            </includes>
+          </cssResource>
+          <formats>
+            <format>
+              <formatName>html</formatName>
+              <stylesheetResource>file:${docbook.source}/xsl/xhtml.xsl</stylesheetResource>
+              <finalName>index.html</finalName>
+            </format>
+            <format>
+              <formatName>pdf</formatName>
+              <stylesheetResource>file:${docbook.source}/xsl/pdf.xsl</stylesheetResource>
+              <finalName>${project.artifactId}-${project.version}.pdf</finalName>
+            </format>
+            <!--format>
+               <formatName>html_single</formatName>
+               <stylesheetResource>file:${docbook.source}/xsl/xhtml-single.xsl</stylesheetResource>
+               <finalName>index.html</finalName>
+            </format-->
+            <!--format>
+                  <formatName>eclipse</formatName>
+                  <stylesheetResource>file:${docbook.source}/xsl/eclipse30.xsl</stylesheetResource>
+                  <finalName>index.html</finalName>
+                </format-->
+          </formats>
+          <options>
+            <xincludeSupported>true</xincludeSupported>
+            <xmlTransformerType>saxon</xmlTransformerType>
+            <docbookVersion>1.76.1</docbookVersion>
+          </options>
         </configuration>
       </plugin>
-
-      <!-- html-zip packaging -->
+      <!--
+         5) assemble and attach the final artifacts (html, docbook, pdf)
+        -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/html.xml</descriptor>
-          </descriptors>
-        </configuration>
+        <dependencies>
+        </dependencies>
         <executions>
           <execution>
+            <id>g-assemble-archives</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/main/assembly/html.xml</descriptor>
+              </descriptors>
+              <appendAssemblyId>true</appendAssemblyId>
+            </configuration>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>attach-artifacts</id>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${wikbook.source}</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>h-attach-pdf</id>
             <phase>package</phase>
             <goals>
               <goal>attach-artifact</goal>
@@ -314,7 +286,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${docbook.targetDirectory}/pdf/${project.artifactId}.pdf</file>
+                  <file>${project.build.directory}/docbook/publish/en-US/pdf/${project.artifactId}-${project.version}.pdf</file>
                   <type>pdf</type>
                 </artifact>
               </artifacts>
@@ -322,6 +294,9 @@
           </execution>
         </executions>
       </plugin>
+
+
+
     </plugins>
   </build>
 
