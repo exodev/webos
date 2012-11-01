@@ -59,7 +59,7 @@
                   <groupId>org.wikbook</groupId>
                   <artifactId>wikbook.docbkxstyle</artifactId>
                   <version>${version.wikbook.plugin}</version>
-                  <outputDirectory>${docbook.source}</outputDirectory>
+                  <outputDirectory>${docbook.source}/en-US</outputDirectory>
                   <includes>**</includes>
                   <excludes>META-INF/**</excludes>
                 </artifactItem>
@@ -67,7 +67,7 @@
                   <groupId>org.exoplatform.doc</groupId>
                   <artifactId>doc-style</artifactId>
                   <version>${org.exoplatform.doc.doc-style.version}</version>
-                  <outputDirectory>${docbook.source}</outputDirectory>
+                  <outputDirectory>${docbook.source}/en-US</outputDirectory>
                   <includes>**</includes>
                   <excludes>META-INF/**</excludes>
                 </artifactItem>
@@ -111,7 +111,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${docbook.source}</outputDirectory>
+              <outputDirectory>${docbook.source}/en-US</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/main/resources</directory>
@@ -144,7 +144,7 @@
           <bookId>WebOSUsersGuide</bookId>
           <sourceDirectory>${wikbook.source}</sourceDirectory>
           <sourceFileName>book.wiki</sourceFileName>
-          <destinationDirectory>${docbook.source}</destinationDirectory>
+          <destinationDirectory>${docbook.source}/en-US</destinationDirectory>
           <destinationFileName>index.xml</destinationFileName>
           <emitDoctype>true</emitDoctype>
           <beforeBookBodyXML><![CDATA[
@@ -162,7 +162,6 @@
       <plugin>
         <groupId>org.jboss.maven.plugins</groupId>
         <artifactId>maven-jdocbook-plugin</artifactId>
-        <version>2.1.1</version>
         <dependencies>
           <dependency>
             <groupId>org.exoplatform.doc</groupId>
@@ -196,14 +195,14 @@
           <sourceDirectory>${docbook.source}</sourceDirectory>
           <sourceDocumentName>index.xml</sourceDocumentName>
           <imageResource>
-            <directory>${docbook.source}</directory>
+            <directory>${docbook.source}/en-US</directory>
             <includes>
               <include>images/**</include>
               <include>background/**</include>
             </includes>
           </imageResource>
           <cssResource>
-            <directory>${docbook.source}</directory>
+            <directory>${docbook.source}/en-US</directory>
             <includes>
               <include>css/**</include>
             </includes>
@@ -211,22 +210,22 @@
           <formats>
             <format>
               <formatName>html</formatName>
-              <stylesheetResource>file:${docbook.source}/xsl/xhtml.xsl</stylesheetResource>
+              <stylesheetResource>file:${docbook.source}/en-US/xsl/xhtml.xsl</stylesheetResource>
               <finalName>index.html</finalName>
             </format>
             <format>
               <formatName>pdf</formatName>
-              <stylesheetResource>file:${docbook.source}/xsl/pdf.xsl</stylesheetResource>
+              <stylesheetResource>file:${docbook.source}/en-US/xsl/pdf.xsl</stylesheetResource>
               <finalName>${project.artifactId}-${project.version}.pdf</finalName>
             </format>
             <!--format>
                <formatName>html_single</formatName>
-               <stylesheetResource>file:${docbook.source}/xsl/xhtml-single.xsl</stylesheetResource>
+               <stylesheetResource>file:${docbook.source}/en-US/xsl/xhtml-single.xsl</stylesheetResource>
                <finalName>index.html</finalName>
             </format-->
             <!--format>
                   <formatName>eclipse</formatName>
-                  <stylesheetResource>file:${docbook.source}/xsl/eclipse30.xsl</stylesheetResource>
+                  <stylesheetResource>file:${docbook.source}/en-US/xsl/eclipse30.xsl</stylesheetResource>
                   <finalName>index.html</finalName>
                 </format-->
           </formats>
